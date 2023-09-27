@@ -7,8 +7,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class P01_GetProductCount {
 
     public static void main(String[] args) {
-        // dependency
+        // our dependencies
         ProductDao dao;
+        ProductDao dao2;
 
         // a variable representing the spring container
         AnnotationConfigApplicationContext ctx;
@@ -17,6 +18,9 @@ public class P01_GetProductCount {
         ctx = new AnnotationConfigApplicationContext(AppConfig1.class);
 
         dao = ctx.getBean("jdbcDao", ProductDao.class);
+        dao2 = ctx.getBean("jdbcDao", ProductDao.class);
+
+        System.out.println("dao2 == dao is " + (dao2==dao));
         System.out.println("dao is an instance of " + dao.getClass().getName());
         System.out.println("There are " + dao.count() + " products.");
 
