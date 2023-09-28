@@ -7,17 +7,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 
 /**
- * Example of setting up a connection pool.
+ * Example of setting up a JdbcTemplate.
  *
  * */
 @ComponentScan(basePackages = {"com.rose.dao"})
 @Configuration
 @PropertySource("classpath:jdbc.properties")
-public class AppConfig3 {
+public class AppConfig4 {
 
     @Value("${jdbc.driver}")
     private String driverClassName;
@@ -36,12 +37,18 @@ public class AppConfig3 {
         bds.setUsername(user);
         bds.setPassword(password);
 
-        bds.setInitialSize(10);     // initial amount of connections
-        bds.setMaxTotal(100);       // maximum amount of connections
-        bds.setMaxWaitMillis(500);  // max waiting time for a client when there's no connections available
-        bds.setMaxIdle(50);         // max amount of connections that can be idle
-        bds.setMinIdle(2);          // min amount of connections that can be idle
+        bds.setInitialSize(10);
+        bds.setMaxTotal(100);
+        bds.setMaxWaitMillis(500);
+        bds.setMaxIdle(50);
+        bds.setMinIdle(2);
+
         return bds;
+    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
 }

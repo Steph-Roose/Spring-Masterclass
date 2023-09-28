@@ -4,10 +4,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
 
+//@Component("jdbcDao")
+@Repository("jdbcDao")
 @NoArgsConstructor
 @Getter
 @Setter
