@@ -1,8 +1,10 @@
 package com.rose.programs;
 
 import com.rose.config.AppConfig4;
+import com.rose.entity.Category;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,15 @@ import java.util.Map;
 public class P02_TastingJdbcTemplate {
 
     static JdbcTemplate template;
+
+    static RowMapper<Category> rowMapper = (rs, rowNum) -> {
+            Category c = new Category();
+            c.setCategoryId(rs.getInt("category_id"));
+            c.setCategoryName(rs.getString("category_name"));
+            c.setDescription(rs.getString("description"));
+            c.setPicture(rs.getBytes("picture"));
+            return c;
+    };
 
     public static void main(String[] args) {
         AnnotationConfigApplicationContext ctx;
@@ -22,9 +33,27 @@ public class P02_TastingJdbcTemplate {
 //        printShipperName(4);
 //        printProductDetails(33);
 //        printAllShipper();
-        printAllShipperNames();
+//        printAllShipperNames();
+//        getCategory(1);
+        getAllCategories();
 
         ctx.close();
+    }
+
+    static void getAllCategories() {
+        List<Category> list = template.query("select * from categories", rowMapper);
+        for(Category c: list) {
+            System.out.println(c);
+        }
+    }
+
+    static void getCategory(int categoryId) {
+        String sql = "select * from categories where category_id=?";
+
+        Category cat = template.queryForObject(sql, rowMapper, categoryId);
+        System.out.println("Id = " + cat.getCategoryId());
+        System.out.println("Name = " + cat.getCategoryName());
+        System.out.println("Description = " + cat.getDescription());
     }
 
     static void printAllShipperNames() {
@@ -36,7 +65,7 @@ public class P02_TastingJdbcTemplate {
     }
 
     static void printAllShipper() {
-        String sql = "Select * from shippers";
+        String sql = "select * from shippers";
         List<Map<String, Object>> list = template.queryForList(sql);
         for(Map<String, Object> data : list) {
             System.out.println(data.get("company_name") + " --> " + data.get("phone"));
