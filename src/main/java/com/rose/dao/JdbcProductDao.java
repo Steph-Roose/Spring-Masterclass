@@ -3,7 +3,9 @@ package com.rose.dao;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.sql.DataSource;
 import java.sql.*;
 
 @NoArgsConstructor
@@ -16,7 +18,21 @@ public class JdbcProductDao implements ProductDao {
     private String user;
     private String password;
 
+    @Autowired(required = false)
+    private Connection connection;
+
+    @Autowired(required = false)
+    private DataSource dataSource;
+
     private Connection createConnection() throws ClassNotFoundException, SQLException {
+
+        if(dataSource != null) {
+            return dataSource.getConnection();
+        }
+        if(connection != null && !connection.isClosed()) {
+            return connection;
+        }
+
         Class.forName(driverClassName);
         return DriverManager.getConnection(url, user, password);
     }

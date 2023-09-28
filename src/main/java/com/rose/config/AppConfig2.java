@@ -8,13 +8,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 /**
- * Example of manually setting up connection to the DB.
+ * Example of manually wiring and autowiring connection to the DB.
  *
  * */
 @Configuration
 @PropertySource("classpath:jdbc.properties")
-public class AppConfig1 {
+public class AppConfig2 {
 
     @Value("${jdbc.driver}")
     private String driverClassName;
@@ -25,26 +29,18 @@ public class AppConfig1 {
     @Value("${jdbc.password}")
     private String password;
 
-
-    public AppConfig1() {
-        System.out.println("AppConfig1 instantiated");
+    @Bean
+    public Connection connection() throws ClassNotFoundException, SQLException {
+        Class.forName(driverClassName);
+        return DriverManager.getConnection(url, user, password);
     }
 
     @Bean
-    public DummyProductDao dummyDao() {
-        System.out.println("AppConfig1.dummyDao() called");
-        return new DummyProductDao();
-    }
-
-    @Scope("singleton")
-    @Bean
-    public JdbcProductDao jdbcDao() {
-        System.out.println("AppConfig1.jdbcDao() called");
-        JdbcProductDao dao = new JdbcProductDao();
-        dao.setDriverClassName(driverClassName);
-        dao.setUrl(url);
-        dao.setUser(user);
-        dao.setPassword(password);
-        return dao;
+    public JdbcProductDao jdbcDao(Connection connection) {
+//    Manual wiring:
+//        JdbcProductDao dao = new JdbcProductDao();
+//        dao.setConnection(connection);
+//        return dao;
+        return new JdbcProductDao();
     }
 }
